@@ -1,7 +1,9 @@
-import { useDispatch, useSelector } from 'react-redux';
 import css from './ContactList.module.css';
-import { removeContact } from '../../store/contactsSlice';
-import { getContacts, getFilter } from '../../store/selectors';
+import {
+  useGetContactsQuery,
+  useDeleteContactMutation,
+} from '../../redux/services';
+import { useSelector } from 'react-redux';
 
 const ContactListItem = ({ id, name, number, onDeleteContact }) => {
   return (
@@ -15,22 +17,16 @@ const ContactListItem = ({ id, name, number, onDeleteContact }) => {
 };
 
 export const ContactList = () => {
-  const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
+  const { data = [] } = useGetContactsQuery();
 
-  const getfilterContacts = () => {
-    const normalizedFilter = filter.toLowerCase();
-    return contacts.filter(contact => {
-      const contactName = contact.name ? contact.name.toLowerCase() : '';
-      return contactName.includes(normalizedFilter);
-    });
-  };
+  const [deleteContact] = useDeleteContactMutation();
+  const filter = useSelector(state => state.filter.filter);
 
-  const handleDelete = id => dispatch(removeContact(id));
+  const filteredContacts = data.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
-  const filteredContacts = getfilterContacts();
-  console.log('Filtered Contacts:', filteredContacts);
+  const handleDelete = id => deleteContact(id);
 
   return (
     <ul className={css.contactList}>

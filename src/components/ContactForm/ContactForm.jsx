@@ -1,50 +1,38 @@
 import css from './ContactForm.module.css';
 import { NotificationManager } from 'react-notifications';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts } from '../../store/selectors';
-import { addContact } from '../../store/contactsSlice';
+import {
+  useGetContactsQuery,
+  useAddContactMutation,
+} from '../../redux/services';
+
+import { useRef } from 'react';
 
 export const ContactForm = () => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-  const contacts = useSelector(getContacts);
-  const dispatch = useDispatch();
-
-  const handleChangeForm = evt => {
-    const { name, value } = evt.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        return;
-    }
-  };
+  const { data } = useGetContactsQuery();
+  const [addContact] = useAddContactMutation();
+  const inputForm = useRef();
 
   const handleFormSubmit = evt => {
     evt.preventDefault();
 
-    const contactExists = contacts.some(
-      contact =>
-        contact.name && contact.name.toLowerCase() === name.toLowerCase()
-    );
+    const objUserData = Object.fromEntries(new FormData(inputForm.current));
 
-    if (contactExists) {
-      NotificationManager.info(`${name} is already in contacts.`);
+    const contactExists = data.map(contact => contact.name.toLowerCase());
+
+    if (contactExists.includes(objUserData.name.toLowerCase())) {
+      NotificationManager.info(`${objUserData.name} is already in contacts.`);
       return;
     }
-
-    dispatch(addContact({ name, number }));
-    setName('');
-    setNumber('');
+    addContact(objUserData);
+    inputForm.current.reset();
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className={css.formContact}>
+    <form
+      ref={inputForm}
+      className={css.formContact}
+      onSubmit={handleFormSubmit}
+    >
       <label htmlFor="nameInput" className={css.labelInput}>
         Name
       </label>
@@ -52,8 +40,9 @@ export const ContactForm = () => {
         type="text"
         name="name"
         id="nameInput"
-        value={name}
-        onChange={handleChangeForm}
+        pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+        required
         className={css.inputContact}
         autoComplete="name"
       />
@@ -64,9 +53,9 @@ export const ContactForm = () => {
         type="tel"
         name="number"
         id="phoneInput"
-        value={number}
+        pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
+        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
         required
-        onChange={handleChangeForm}
         className={css.inputContact}
         autoComplete="tel"
       />
