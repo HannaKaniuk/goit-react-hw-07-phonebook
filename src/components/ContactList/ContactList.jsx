@@ -1,20 +1,10 @@
+import { ContactListItem } from 'components/ContactListItem/ContactListItem';
 import css from './ContactList.module.css';
 import {
   useGetContactsQuery,
   useDeleteContactMutation,
 } from '../../redux/services';
 import { useSelector } from 'react-redux';
-
-const ContactListItem = ({ id, name, number, onDeleteContact }) => {
-  return (
-    <li className={css.contactListItem}>
-      {name}: {number}{' '}
-      <button onClick={() => onDeleteContact(id)} className={css.buttonList}>
-        Delete
-      </button>
-    </li>
-  );
-};
 
 export const ContactList = () => {
   const { data = [] } = useGetContactsQuery();

@@ -5,17 +5,18 @@ import {
   useAddContactMutation,
 } from '../../redux/services';
 
-import { useRef } from 'react';
+// import { useRef } from 'react';
 
 export const ContactForm = () => {
   const { data } = useGetContactsQuery();
   const [addContact] = useAddContactMutation();
-  const inputForm = useRef();
+
+  // const inputForm = useRef();
 
   const handleFormSubmit = evt => {
     evt.preventDefault();
 
-    const objUserData = Object.fromEntries(new FormData(inputForm.current));
+    const objUserData = Object.fromEntries(new FormData(evt.target));
 
     const contactExists = data.map(contact => contact.name.toLowerCase());
 
@@ -24,12 +25,12 @@ export const ContactForm = () => {
       return;
     }
     addContact(objUserData);
-    inputForm.current.reset();
+    // inputForm.current.reset();
   };
 
   return (
     <form
-      ref={inputForm}
+      // ref={inputForm}
       className={css.formContact}
       onSubmit={handleFormSubmit}
     >
@@ -51,7 +52,7 @@ export const ContactForm = () => {
       </label>
       <input
         type="tel"
-        name="number"
+        name="phone"
         id="phoneInput"
         pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
