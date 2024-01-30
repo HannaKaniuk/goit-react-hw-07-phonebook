@@ -25,7 +25,7 @@ export const ContactForm = () => {
       return;
     }
     addContact(objUserData);
-    // inputForm.current.reset();
+    evt.target.reset();
   };
 
   return (
@@ -52,7 +52,7 @@ export const ContactForm = () => {
       </label>
       <input
         type="tel"
-        name="phone"
+        name="number"
         id="phoneInput"
         pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
